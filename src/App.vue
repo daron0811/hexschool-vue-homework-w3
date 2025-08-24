@@ -1,12 +1,15 @@
 <template>
   <div class="container mt-5">
+
+    <button class="btn btn-primary" @click="triggerToast">顯示推播</button>
+
+    <ToastAlert :title="'提示'" :message="toastMessage" :show="showToast" />
+
     <div class="row">
       <!--商品-->
       <div class="col-md-4">
         <div class="list-group">
-
           <product-card :drinks="data" @cart-item="addToCart" /> <!-- //將資料用 prop 傳入子物件方式 -->
-
         </div>
       </div>
 
@@ -87,11 +90,24 @@
 
 <script setup>
 
+
+
 import { ref, computed } from 'vue';
 import ProductCard from './components/ProductCard.vue';
 import CartGroup from './components/CartGroup.vue';
 
-const pagleTitle = '卡片標題';
+import ToastAlert from './components/ToastAlert.vue';
+
+const toastMessage = ref('')
+const showToast = ref(false)
+
+const triggerToast = (msg) => {
+  toastMessage.value = msg
+  showToast.value = true
+
+  // 幾秒後自動重置，避免下次無法觸發
+  setTimeout(() => (showToast.value = false), 10)
+}
 
 //將資料用prop傳入方式
 
@@ -167,12 +183,17 @@ const addToCart = (drink) => {
   const existItem = cart.value.find(item => item.id === drink.id);
 
   if (existItem) {
+    if (existItem.quantity >= 10) {
+      triggerToast(`${drink.name} 數量已達到上限`);
+      return;
+    }
+    triggerToast(`已有重複品項 , 將自動新增 1 筆數量至 ${drink.name} `);
     existItem.quantity += 1;
   }
   else {
     cart.value.push({
       ...drink,
-      // id: new Date().getTime(),//原本是用時間戳記,改為該物件原本的ID
+      timeStamp: new Date().getTime(),//原本是為該物件原本的ID，後來是用時間戳記
       id: drink.id,
       quantity: 1,
     });
