@@ -19,11 +19,10 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['cart-item'])
-const text = ref('');
 
 const addToCart = (drink) => {
     emit('cart-item', drink) // 傳出飲料物件給App
-    console.log(`準備從子物件傳出的 ID : ${x.id}`);
+    console.log(`準備從子物件傳出的 ID : ${drink.id}`);
 }
 
 </script>

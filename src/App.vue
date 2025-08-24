@@ -24,22 +24,9 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in cart" :key="item.id">
-              <td>
-                <button type="button" class="btn btn-sm" @click="removeFromCart(item.id)">
-                  x
-                </button>
-              </td>
-              <td>{{ item.name }}</td>
-              <td><small>{{ item.description }}</small></td>
-              <td>
-                <select class="form-select" v-model="item.quantity" @change="updateCart(item)">
-                  <option v-for="n in 10" :key="n" :value="n">{{ n }}</option>
-                </select>
-              </td>
-              <td>{{ item.price }}</td>
-              <td>{{ itemSubtotal(item) }}</td>
-            </tr>
+
+            <CartGroup :cart=cart @update="updateCart" @delete="removeFromCart" />
+
           </tbody>
         </table>
         <div v-if="cart.length === 0" class="alert alert-primary text-center" role="alert">
@@ -102,6 +89,7 @@
 
 import { ref, computed } from 'vue';
 import ProductCard from './components/ProductCard.vue';
+import CartGroup from './components/CartGroup.vue';
 
 const pagleTitle = '卡片標題';
 
@@ -173,14 +161,22 @@ const sum = computed(() => {
 const addToCart = (drink) => {
 
   //TODO : 要更新CartCard物件，並檢查cart array有沒有重複ID
-  
+
   console.log(`準備從父物件收到的 ID : ${drink.id}`);
-  cart.value.push({
-    ...drink,
-    // id: new Date().getTime(),//原本是用時間戳記,改為該物件原本的ID
-    id: drink.id,
-    quantity: 1,
-  });
+
+  const existItem = cart.value.find(item => item.id === drink.id);
+
+  if (existItem) {
+    existItem.quantity += 1;
+  }
+  else {
+    cart.value.push({
+      ...drink,
+      // id: new Date().getTime(),//原本是用時間戳記,改為該物件原本的ID
+      id: drink.id,
+      quantity: 1,
+    });
+  }
 };
 
 const updateCart = (item) => {
