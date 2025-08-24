@@ -1,8 +1,6 @@
 <template>
   <div class="container mt-5">
 
-    <button class="btn btn-primary" @click="triggerToast">顯示推播</button>
-
     <ToastAlert :title="'提示'" :message="toastMessage" :show="showToast" />
 
     <div class="row">
